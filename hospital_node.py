@@ -80,4 +80,4 @@ def fetch_key():
 
 if __name__ == '__main__':
     # Wrap in HTTPS in production: ssl_context='adhoc'
-    app.run(port=8081)
+    app.run(port=8081, ssl_context='adhoc')

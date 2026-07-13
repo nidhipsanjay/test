@@ -4,9 +4,12 @@ import requests
 import base64
 import json
 from crypto_utils import secure_deserialize
+import urllib3
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 app = Flask(__name__)
-HOSPITAL_URL = "http://localhost:8081"
+HOSPITAL_URL = "https://localhost:8081"
 
 # In-Memory Rainbow Table (Simulated pre-computation on boot)
 # In production, iterate through the required bounds and store elliptic curve point strings mapped to their integers.
@@ -28,7 +31,7 @@ def compute():
     session_id = request.json['session_id'] 
     
     print(f"[CLOUD] Requesting Functional Key for Session {session_id} from Hospital...")
-    resp = requests.post(f"{HOSPITAL_URL}/fetch_key", json={"session_id": session_id})
+    resp = requests.post(f"{HOSPITAL_URL}/fetch_key", json={"session_id": session_id}, verify=False)
     
     if "error" in resp.json():
         return jsonify({"error": "Hospital refused to issue key for this session."})
@@ -47,4 +50,4 @@ def compute():
 
 
 if __name__ == '__main__':
-    app.run(port=8082)
+    app.run(port=8082, ssl_context='adhoc')
